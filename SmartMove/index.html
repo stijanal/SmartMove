@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartMove</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+<section id="screen-auth" class="screen active">
+    <div class="auth-container">
+        <h1>SmartMove</h1>
+        <p class="auth-subtitle">
+            Prijavi se ili napravi novi nalog
+        </p>
+        <div class="auth-form">
+            <input type="email"
+                id="login-email"
+                placeholder="Email">
+            <div class="password-wrapper">
+                <input type="password"
+                    id="login-password"
+                    placeholder="Lozinka">
+                <span class="toggle-password"
+                    onclick="app.togglePassword('login-password', this)">
+                    👁
+                </span>
+            </div>
+            <button class="btn-main"
+                onclick="app.login()">
+                Prijavi se
+            </button>
+            <button class="btn-register"
+                onclick="app.openRegisterModal()">
+                Registruj se
+            </button>
+        </div>
+    </div>
+    <!-- REGISTER MODEL -->
+    <div id="register-modal"
+        class="register-modal hidden">
+        <div class="register-box">
+            <div class="register-header">
+                <h2>Registracija</h2>
+                <span class="close-register"
+                    onclick="app.closeRegisterModal()">
+                    ×
+                </span>
+            </div>
+            <div class="register-form">
+                <input type="text"
+                    id="register-name"
+                    placeholder="Ime">
+                <input type="text"
+                    id="register-lastname"
+                    placeholder="Prezime (opciono)">
+                <input type="date"
+                    id="register-birthdate">
+                <input type="tel"
+                    id="register-phone"
+                    placeholder="Broj telefona (opciono)">
+                <input type="email"
+                    id="register-email"
+                    placeholder="Email">
+                <div class="password-wrapper">
+                    <input type="password"
+                        id="register-password"
+                        placeholder="Lozinka">
+                    <span class="toggle-password"
+                        onclick="app.togglePassword('register-password', this)">
+                        👁
+                    </span>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password"
+                        id="register-confirm-password"
+                        placeholder="Potvrdi lozinku">
+                    <span class="toggle-password"
+                        onclick="app.togglePassword('register-confirm-password', this)">
+                        👁
+                    </span>
+                </div>
+                <button class="btn-main"
+                    onclick="app.register()">
+                    Kreiraj nalog
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<!-------------------------------------->
+    <header id="main-header" class="hidden">
+        <div class="header-left">
+            <span id="menu-icon" class="icon" onclick="app.toggleMenu()">☰</span>
+        </div>
+        <div class="header-right">
+           <div id="app-logo">
+            <img src="logo.png" alt="SmartMove Logo" class="main-logo">
+           </div>        
+        </div>
+    </header>
+    <div id="side-menu" class="side-menu hidden">
+        <div class="menu-header">
+            <h3>Filtriraj pretragu</h3>
+            <span class="close-menu" onclick="app.toggleMenu()">×</span>
+        </div>
+        <div class="menu-body">
+            <label>Cena do (€):</label>
+            <input type="number" id="filter-max-price" placeholder="Npr. 20">
+            <label>Rejting vozača:</label>
+            <select id="filter-rating">
+                <option value="0">Svejedno</option>
+                <option value="4.5">★ 4.5+</option>
+                <option value="4.8">★ 4.8+</option>
+            </select>
+            <button class="btn-main" onclick="app.toggleMenu()">Primeni</button>
+        </div>
+    </div>
+    <section id="screen-home" class="screen hidden">
+        <div class="search-profile-wrapper">
+            <div class="search-hero">
+                <h1>Gde želiš da ideš?</h1>
+            </div>
+            <div class="search-form-container">
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="inp-from" placeholder="Mesto polaska...">
+                    <div id="suggestions-from" class="suggestions-box hidden"></div>
+                </div>              
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="inp-to" placeholder="Gde želiš da odeš?">
+                    <div id="suggestions-to" class="suggestions-box hidden"></div>
+                </div>
+                <div class="input-row">
+                    <div class="calendar-wrapper execution-width">
+                        <input type="text" id="inp-date" placeholder="Izaberi datum" readonly>
+                        <div id="custom-calendar" class="modern-calendar-popup hidden">
+                            <div class="calendar-month-header">
+                                <span>◀</span>
+                                <span>Maj 2026</span>
+                                <span>▶</span>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <div>P</div><div>U</div><div>S</div><div>Č</div><div>P</div><div>S</div><div>N</div>
+                            </div>
+                            <div id="calendar-days" class="calendar-days-grid"></div>
+                        </div>
+                    </div>
+                    <input type="number" id="inp-seats" min="1" max="8" placeholder="Putnika" style="width: 50%;">
+                </div>
+                <button id="btn-search-submit" class="btn-main">Pretraži vožnje</button>
+            </div>
+        </div>
+    </section>
+    <section id="screen-results" class="screen hidden">
+        <div class="filter-wrapper">
+            <label class="filter-chip"><input type="checkbox" checked> 🚗 Vožnje</label>
+            <label class="filter-chip"><input type="checkbox" checked> 🚖 Taxi</label>
+            <label class="filter-chip"><input type="checkbox" checked> 📱 Uber</label>
+            <label class="filter-chip"><input type="checkbox" checked> 🔑 Rent-a-car</label>
+            <button id="btn-confirm-filters" class="btn-confirm">Potvrdi</button>
+        </div>     
+        <h3 class="results-subtitle">Isplative ponude</h3>
+        <div class="smart-container">
+            <div class="smart-card cheapest">
+                <span class="smart-tag">Najjeftinija opcija (Carpool)</span>
+                <p>Podeli vožnju sa Milanom u 12:00h — <strong>10€</strong></p>
+            </div>
+            <div class="smart-card fastest">
+                <span class="smart-tag">Najbrža opcija (Uber/Taxi)</span>
+                <p>Vozilo stiže na Vašu adresu za 7 minuta i vozi Vas direktno — <strong>60€</strong></p>
+            </div>
+            <div class="smart-card flexible">
+                <span class="smart-tag">Fleksibilna opcija (Rent-a-car)</span>
+                <p>Preuzmi vozilo na lokaciji blizu Tebe, ostavi ga na aerodromu — <strong>35€/dan</strong></p>
+            </div>
+            <div class="smart-card multimodal">
+                <span class="smart-tag">Budućnost - Kombinovana ruta</span>
+                <p>Stefan carpool do naplatne rampe Bg (5€) + rezervisani Taxi do Aerodroma (15€). — <strong>20€ ukupno</strong></p>
+            </div>
+        </div>
+        <h3 class="results-subtitle" style="margin-top: 20px;">Slobodne vožnje</h3>
+        <div class="results-list" id="rides-container">
+            <div class="ride-card" 
+            data-price="12"
+            data-rating="4.9">
+                <div class="card-main-info">
+                    <div class="card-left-meta">
+                        <div class="driver-row">
+                            <div class="avatar"></div>
+                            <div>
+                                <h4>Marko Nikolić</h4>
+                                <span class="stars">★ 4.9</span>
+                            </div>
+                        </div>
+                        <div class="price-display">12 €</div>
+                    </div>
+                    <div class="card-right-meta">
+                        <div class="top-right-actions">
+                            <span class="icon-dots" onclick="alert('Opcije deljenja i prijave')">...</span>
+                        </div>
+                        <div class="date-time-badge">28. Maj • 12:00h</div>
+                        <div class="inbox-msg-trigger" onclick="app.openChat()">💬</div>
+                    </div>
+                </div>
+                <div class="driver-notes-wrapper">
+                    <p class="custom-note-text">Idem direktno na terminal 1, imam dosta mesta u gepeku.</p>
+                    <div class="card-rules">
+                        <span class="rule-badge">🚭 Bez dušenja</span>
+                        <span class="rule-badge">🎵 Bez muzike</span>
+                        <span class="rule-badge">🛑 Direktan put</span>
+                    </div>
+                </div>
+                <div class="advanced-route-bar">
+                    <div class="route-labels">
+                        <span class="station-name">Kragujevac (Glavna stanica)</span>
+                        <span class="station-name">Aerodrom Bg (Terminal 1)</span>
+                    </div>
+                    <div class="visual-line-container">
+                        <div class="circle-node"></div>
+                        <div class="connecting-line">
+                            <span class="duration-tag">⏱ 1h 45min • <span class="verified-driver-status">✓ Verifikovan</span></span>
+                        </div>
+                        <div class="circle-node"></div>
+                    </div>
+                </div>
+                <div class="card-accordion-triggers">
+                    <span onclick="app.toggleCollapse('share-box-1')">🔗 Podeli vožnju</span>
+                    <span onclick="app.toggleCollapse('reviews-box-1')">💬 Pogledaj komentare (3)</span>
+                </div>
+                <div id="share-box-1" class="collapse-content hidden">
+                    <div class="share-socials">
+                        <button onclick="alert('Podeljeno na Viberu')">Viber</button>
+                        <button onclick="alert('Podeljeno putem SMS-a')">SMS</button>
+                        <button onclick="alert('Link kopiran')">Kopiraj Link</button>
+                    </div>
+                </div>
+                <div id="reviews-box-1" class="collapse-content hidden">
+                    <div class="detailed-stars-summary">
+                        <strong>Ukupno: ★ 4.9</strong> (5 zvezdica: 12 ljudi, 4 zvezdice: 1 čovek)
+                    </div>
+                    <div class="comment-item">
+                        <strong>Jelena:</strong> "Sve po dogovoru, vožnja tačna i sigurna!"
+                    </div>
+                    <div class="comment-item">
+                        <strong>Ivan:</strong> "Odličan auto, vozač veoma kulturan."
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<section id="screen-inbox" class="screen hidden">
+    <h2 class="section-title">Poruke</h2>
+    <div class="chat-list">
+        <div class="inbox-top-bar">
+            <h3>Aktivne konverzacije</h3>
+            <span>💬 2 nova</span>
+        </div>
+        <div class="chat-card-modern" onclick="app.openChat()">
+            <div class="chat-glow"></div>
+            <div class="chat-avatar-container">
+                <div class="chat-avatar-img"></div>
+                <span class="live-status-dot"></span>
+            </div>
+            <div class="chat-body-content">
+                <div class="chat-top-row">
+                    <h4>
+                        Nikola Vujić
+                        <span class="driver-rating-inbox">★ 4.9</span>
+                    </h4>
+                    <span class="chat-timestamp">Sada</span>
+                </div>
+                <div class="chat-trip-preview">
+                    <span>Kragujevac</span>
+                    <div class="mini-line"></div>
+                    <span>Beograd</span>
+                </div>
+                <p class="chat-preview-text">
+                    Važi, vidimo se na stanici kod glavnog ulaza...
+                </p>
+            </div>
+            <div class="badge-new">1</div>
+        </div>
+    </div>
+</section>
+    <section id="screen-chat" class="screen hidden">
+        <div class="active-chat-header">
+            <span id="btn-back-to-inbox" class="back-arrow">←</span>
+            <div class="active-avatar"></div>
+            <div>
+                <h3>Nikola Vujić</h3>
+                <span class="driver-rating-header">★ 4.9 profesionalni vozač</span>
+            </div>
+        </div> 
+        <div class="chat-pinned-route-container">
+            <div class="chat-route-labels">
+                <span class="chat-node-label">Kragujevac</span>
+                <span class="chat-node-label">Beograd</span>
+            </div>
+            <div class="chat-visual-timeline">
+                <div class="chat-dot"></div>
+                <div class="chat-line">28. Maj, 16:00h • <span class="status-confirmed-orange">Potvrđeno</span></div>
+                <div class="chat-dot"></div>
+            </div>
+        </div>
+        <div class="chat-stream">
+            <div class="message-row incoming-row">
+                <div class="chat-message-avatar"></div>
+                <div class="message incoming">Jel važi i dalje dogovor za vožnju?
+                </div>
+            </div>
+            <div class="message-row outgoing-row">
+                <div class="message outgoing">Naravno, vidimo se na stanici!
+                </div>
+            </div>
+        </div>
+        <div id="chat-plus-menu" class="chat-plus-extensions hidden">
+            <div class="extension-item" onclick="alert('Lokacija poslata!')">📍 Pošalji trenutnu lokaciju</div>
+            <div class="extension-item" onclick="alert('Otvaranje kamere...')">📷 Uslikaj i pošalji fotografiju</div>
+        </div>
+        <div class="chat-footer-form">
+            <button class="btn-chat-add" id="btn-chat-plus">+</button>
+            <input type="text" id="chat-input-field" placeholder="Napiši poruku...">
+            <button class="btn-chat-send-orange">➤</button>
+        </div>
+    </section>
+    <!-- ==================== EKRAN 5: PROFIL ==================== -->
+<section id="screen-profile" class="screen hidden">
+    <div class="profile-center-container">
+        <div class="profile-card">
+            <div class="profile-avatar-container">
+    <img id="profile-image" class="profile-avatar" src="logo.png" alt="Profilna">
+    <input type="file" id="profile-upload" accept="image/*" hidden>
+    <div class="profile-photo-actions">
+        <button
+            class="btn-small-orange"
+            onclick="document.getElementById('profile-upload').click()">
+            Dodaj sliku
+        </button>
+        <button
+            class="btn-small-orange"
+            onclick="app.openCamera()">
+            Uslikaj
+        </button>
+    </div>
+</div>
+            <h2>
+                Tijana Lukač
+                <span class="verified-icon">✓</span>
+            </h2>
+            <p class="profile-stars">★ 4.8 Rejting korisnika</p>
+            <div class="toggle-switch">
+                <button id="mode-passenger" class="switch-btn active"
+                    onclick="app.switchProfileMode('passenger')">
+                    Putnik
+                </button>
+                <button id="mode-driver" class="switch-btn"
+                    onclick="app.switchProfileMode('driver')">
+                    Vozač
+                </button>
+            </div>
+        </div>
+        <!-- UREDI PROFIL -->
+        <div class="menu-link"
+            onclick="app.toggleCollapse('edit-profile-collapse')">
+            <span>⚙️ Uredi profil</span>
+            <span class="menu-arrow">+</span>
+        </div>
+        <div id="edit-profile-collapse"
+            class="collapse-content hidden">
+            <div class="edit-profile-inputs">
+                <input type="text"
+                    id="edit-name"
+                    value="Tijana"
+                    placeholder="Ime">
+                <input type="text"
+                    id="edit-lastname"
+                    value="Lukač"
+                    placeholder="Prezime">
+                <input type="tel"
+                    id="edit-phone"
+                    value="+38160123456"
+                    placeholder="Broj telefona">
+                <button class="btn-small-orange"
+                    onclick="alert('Podaci su uspešno sačuvani!')">
+                    Sačuvaj
+                </button>
+            </div>
+        </div>
+        <!-- PUTNIK -->
+        <div id="profile-passenger-view"
+            class="profile-sub-view">
+            <div class="menu-link"
+                onclick="app.toggleCollapse('history-collapse')">
+                <span>📁 Istorija putovanja</span>
+                <span class="menu-arrow">+</span>
+            </div>
+            <div id="history-collapse"
+                class="collapse-content hidden">
+                <div class="history-item">
+                    ➔ Kragujevac - Beograd (22. Maj 2026) • 12€
+                </div>
+                <div class="history-item">
+                    ➔ Niš - Kragujevac (15. April 2026) • 8€
+                </div>
+            </div>
+            <div class="menu-link"
+                onclick="app.toggleCollapse('reviews-collapse')">
+                <span>⭐ Moje recenzije</span>
+                <span class="menu-arrow">+</span>
+            </div>
+            <div id="reviews-collapse"
+                class="collapse-content hidden">
+                <div class="review-item">
+                    <strong>Marko P.:</strong>
+                    "Sjajan putnik!" (5/5)
+                </div>
+            </div>
+            <div class="menu-link"
+                onclick="app.toggleCollapse('payment-collapse')">
+                <span>💳 Načini plaćanja</span>
+                <span class="menu-arrow">+</span>
+            </div>
+            <div id="payment-collapse"
+                class="collapse-content hidden">
+                <div class="payment-card-item">
+                    💳 Visa **** 4321
+                </div>
+                <div class="payment-card-item">
+                    📱 Novčanik:
+                    <strong>24.50 €</strong>
+                </div>
+            </div>
+        </div>
+        <!-- VOZAČ -->
+        <div id="profile-driver-view"
+            class="profile-sub-view hidden">
+            <div class="menu-link"
+                onclick="app.toggleCollapse('vehicle-collapse')">
+                <span>🚗 Moje vozilo</span>
+                <span class="menu-arrow">+</span>
+            </div>
+            <div id="vehicle-collapse"
+                class="collapse-content hidden">
+                <div class="edit-profile-inputs">
+                    <input type="text"
+                        id="edit-car-model"
+                        value="Audi A4 (2021)"
+                        placeholder="Model vozila">
+                    <input type="text"
+                        id="edit-car-plates"
+                        value="KG-123-XX"
+                        placeholder="Registracija">
+                    <button class="btn-small-orange"
+                        onclick="alert('Podaci o vozilu su uspešno sačuvani!')">
+                        Sačuvaj vozilo
+                    </button>
+                </div>
+            </div>
+            <div class="menu-link"
+                onclick="app.toggleCollapse('docs-collapse')">
+                <span>📄 Dokumenta i Dozvole</span>
+                <span class="menu-arrow">+</span>
+            </div>
+            <div id="docs-collapse"
+                class="collapse-content hidden">
+                <div class="doc-status-item">
+                    Vozačka:
+                    <span class="status-valid">
+                        ✓ Verifikovano
+                    </span>
+                </div>
+            </div>
+            <div class="menu-link"
+                onclick="app.toggleCollapse('stats-collapse')">
+                <span>📈 Statistika i Zarada</span>
+                <span class="menu-arrow">+</span>
+            </div>
+            <div id="stats-collapse"
+                class="collapse-content hidden">
+                <div class="stat-box-earnings">
+                    Zarada:
+                    <h3>342.00 €</h3>
+                </div>
+            </div>
+        </div>
+        <!-- AKCIJE -->
+        <div class="account-actions-right">
+            <span id="btn-logout"
+                class="link-action-right"
+                onclick="app.logout()">
+                Odjavi se
+            </span>
+            <span id="btn-delete-account"
+                class="link-action-right delete-color"
+                onclick="app.deleteAccount()">
+                Obriši nalog
+            </span>
+        </div>
+    </div>
+</section>
+    <section id="screen-publish" class="screen hidden">
+        <div class="search-profile-wrapper">
+            <div class="search-hero">
+                <h1>Ponudi slobodna mesta</h1>
+            </div>
+            <div class="search-form-container">
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="pub-from" placeholder="Mesto polaska...">
+                    <div id="pub-suggestions-from" class="suggestions-box hidden"></div>
+                </div>     
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="pub-to" placeholder="Mesto odredišta...">
+                    <div id="pub-suggestions-to" class="suggestions-box hidden"></div>
+                </div>
+                <div class="input-row">
+                    <div class="calendar-wrapper execution-width">
+                        <input type="text" id="pub-date" placeholder="Izaberi datum" readonly>
+                        <div id="pub-calendar" class="modern-calendar-popup hidden">
+                            <div class="calendar-month-header">
+                                <span>Maj 2026</span>
+                            </div>
+                            <div id="pub-calendar-days" class="calendar-days-grid"></div>
+                        </div>
+                    </div>
+                    <input type="number" id="pub-seats" min="1" max="8" placeholder="Mesta">
+                </div>
+                <div class="input-row">
+                    <input type="text" id="pub-price" placeholder="Cena (€)">
+                    <div class="time-picker-wrapper">
+                        <input type="text" id="pub-time" placeholder="Vreme" readonly>
+                        <div id="custom-time-picker" class="modern-time-popup hidden">
+                            <div class="time-picker-columns">
+                                <div class="time-column">
+                                    <div id="time-hours-list" class="time-scroll-box"></div>
+                                </div>
+                                <div class="time-column">
+                                    <div id="time-minutes-list" class="time-scroll-box"></div>
+                                </div>
+                            </div>
+                            <button id="btn-confirm-time" class="btn-time-select">Potvrdi</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="btn-finish-publish" class="btn-main">Objavi vožnju</button>
+            </div>
+        </div>
+    </section>
+    <footer id="main-footer" class="hidden">
+        <div class="nav-btn active" onclick="app.navigate('screen-home')">🔍<span>Pretraži</span></div>
+        <div class="nav-btn" onclick="app.navigate('screen-inbox')">💬<span>Inbox</span></div>
+        <div class="nav-btn" onclick="app.navigate('screen-profile')">👤<span>Profil</span></div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+</html>
