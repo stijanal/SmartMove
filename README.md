@@ -22,13 +22,3 @@ Osnovna ideja sistema je da korisniku omogući da na jednostavan način pronađe
 Frontend je statički i može se otvoriti direktno iz `frontend/index.html`.
 
 Za backend koristiti uputstvo iz [backend/README.md](/C:/Users/arand/OneDrive/Radna%20površina/Fakultet/Master%20studije/Milica/SmartMove/backend/README.md).
-
-## Kratak pregled funkcionalnosti
-
-- prijava i registracija korisnika
-- pretraga dostupnih vožnji po relaciji
-- prikaz preporučenih i isplativih opcija prevoza
-- objava nove vožnje od strane vozača
-- inbox i chat komunikacija
-- profil korisnika sa pregledom istorije, recenzija, vozila i verifikacija
-- backend API dokumentovan kroz Swagger
