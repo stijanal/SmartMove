@@ -1,0 +1,340 @@
+openapi: 3.0.3
+info:
+  title: SmartMove Backend API
+  version: 1.0.0
+  description: |
+    Demonstracioni backend za školski projekat SmartMove.
+    API kombinuje nekoliko stvarno implementiranih modula i više stub endpoint-a koji služe za prezentaciju arhitekture i budućih integracija.
+servers:
+  - url: http://localhost:4000
+    description: Lokalno razvojno okruženje
+tags:
+  - name: Health
+  - name: Auth
+  - name: Locations
+  - name: Rides
+  - name: Profile
+  - name: Chat
+  - name: Reviews
+  - name: Payments
+  - name: Vehicles
+  - name: Verifications
+paths:
+  /api/v1/health:
+    get:
+      tags: [Health]
+      summary: Provera statusa servera
+      responses:
+        "200":
+          description: Server je aktivan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessEnvelope"
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Registracija korisnika
+      description: Implementirano. Kreira novog korisnika i vraća demo JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Korisnik uspešno registrovan
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Prijava korisnika
+      description: Implementirano. Vraća JWT token i osnovne podatke korisnika.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Prijava uspešna
+  /api/v1/auth/me:
+    get:
+      tags: [Auth]
+      summary: Trenutni korisnik
+      description: Implementirano. Zahteva Bearer token.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Podaci o prijavljenom korisniku
+  /api/v1/locations:
+    get:
+      tags: [Locations]
+      summary: Lista/autocomplete lokacija
+      description: Implementirano. Ako se prosledi query parametar `query`, vraća filtrirane lokacije.
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lokacije uspešno učitane
+  /api/v1/rides:
+    get:
+      tags: [Rides]
+      summary: Lista svih vožnji
+      description: Implementirano.
+      responses:
+        "200":
+          description: Vožnje uspešno učitane
+    post:
+      tags: [Rides]
+      summary: Objavi novu vožnju
+      description: Implementirano. Zahteva Bearer token.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRideRequest"
+      responses:
+        "201":
+          description: Vožnja uspešno objavljena
+  /api/v1/rides/search:
+    get:
+      tags: [Rides]
+      summary: Pretraga vožnji
+      description: Implementirano. Podržava `from`, `to`, `seats`, `maxPrice` i `minDriverRating`.
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+        - name: seats
+          in: query
+          schema:
+            type: integer
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: minDriverRating
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Rezultati pretrage
+  /api/v1/rides/{id}:
+    get:
+      tags: [Rides]
+      summary: Detalji jedne vožnje
+      description: Implementirano.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Detalji vožnje
+  /api/v1/profile/me:
+    get:
+      tags: [Profile]
+      summary: Moj profil
+      description: Implementirano. Vraća osnovne profile podatke.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Profil uspešno učitan
+    put:
+      tags: [Profile]
+      summary: Ažuriranje profila
+      description: Stub endpoint. Vraća ugovoreni odgovor sa `meta.mock = true`.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Simulirano ažuriranje profila
+  /api/v1/conversations:
+    get:
+      tags: [Chat]
+      summary: Lista razgovora
+      description: Stub endpoint za inbox pregled.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demo lista razgovora
+  /api/v1/conversations/{id}/messages:
+    get:
+      tags: [Chat]
+      summary: Lista poruka razgovora
+      description: Stub endpoint za pregled poruka.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Demo poruke
+    post:
+      tags: [Chat]
+      summary: Slanje poruke
+      description: Stub endpoint za demonstraciju chat integracije.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Simulirano slanje poruke
+  /api/v1/reviews/me:
+    get:
+      tags: [Reviews]
+      summary: Moje recenzije
+      description: Stub endpoint.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demo recenzije
+  /api/v1/payments/methods:
+    get:
+      tags: [Payments]
+      summary: Načini plaćanja
+      description: Stub endpoint.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demo načini plaćanja
+  /api/v1/vehicles/me:
+    get:
+      tags: [Vehicles]
+      summary: Moje vozilo
+      description: Stub endpoint.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demo vozilo
+    put:
+      tags: [Vehicles]
+      summary: Ažuriranje vozila
+      description: Stub endpoint.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Simulirano ažuriranje vozila
+  /api/v1/verifications/me:
+    get:
+      tags: [Verifications]
+      summary: Status verifikacije
+      description: Stub endpoint.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Demo status verifikacije
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    SuccessEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Operacija je uspešno izvršena.
+        data:
+          type: object
+        meta:
+          type: object
+    RegisterRequest:
+      type: object
+      required: [firstName, email, password]
+      properties:
+        firstName:
+          type: string
+          example: Tijana
+        lastName:
+          type: string
+          example: Lukač
+        phone:
+          type: string
+          example: "+38160123456"
+        birthDate:
+          type: string
+          format: date-time
+          example: "1999-04-21T00:00:00.000Z"
+        email:
+          type: string
+          format: email
+          example: nova.korisnica@smartmove.rs
+        password:
+          type: string
+          example: Lozinka123
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: stijanal@gmail.com
+        password:
+          type: string
+          example: Trava123
+    CreateRideRequest:
+      type: object
+      required: [origin, destination, departureAt, totalSeats, availableSeats, price]
+      properties:
+        origin:
+          type: string
+          example: Kragujevac
+        destination:
+          type: string
+          example: Aerodrom Beograd
+        departureAt:
+          type: string
+          format: date-time
+          example: "2026-06-01T12:00:00.000Z"
+        totalSeats:
+          type: integer
+          example: 4
+        availableSeats:
+          type: integer
+          example: 3
+        price:
+          type: number
+          example: 12
+        note:
+          type: string
+          example: Idem direktno na terminal 1, imam dosta mesta u gepeku.
