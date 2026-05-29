@@ -1,0 +1,44 @@
+{
+  "name": "smartmove-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend scaffold za SmartMove školski projekat.",
+  "main": "dist/src/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "start": "node dist/src/server.js",
+    "db:prepare": "node -e \"const fs=require('fs'); if (!fs.existsSync('prisma/dev.db')) fs.closeSync(fs.openSync('prisma/dev.db','w'));\"",
+    "db:push": "npm run db:prepare && prisma db push",
+    "db:seed": "prisma db seed",
+    "test": "prisma generate && npm run db:push && vitest run"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "bcryptjs": "latest",
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "helmet": "latest",
+    "jsonwebtoken": "latest",
+    "swagger-ui-express": "latest",
+    "yaml": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/cors": "latest",
+    "@types/express": "latest",
+    "@types/jsonwebtoken": "latest",
+    "@types/node": "latest",
+    "@types/supertest": "latest",
+    "@types/swagger-ui-express": "latest",
+    "prisma": "^6.0.0",
+    "supertest": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}
