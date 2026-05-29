@@ -165,7 +165,3 @@ To je posebno korisno tokom prezentacije, jer omogućava jasan i vizuelan prikaz
 - Prisma ORM
 - SQLite
 - Swagger UI
-
-## Zaključak
-
-SmartMove je osmišljen kao sistem koji objedinjuje pretragu prevoza, objavu vožnji, komunikaciju i upravljanje korisničkim profilom. Frontend prikazuje korisničke tokove i iskustvo rada sa aplikacijom, dok backend obezbeđuje servisnu logiku, podatke i API sloj potreban za dalje širenje sistema.
