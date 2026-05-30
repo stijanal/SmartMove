@@ -156,9 +156,6 @@ const app = {
         if(rating < minRating) {
             visible = false;
         }
-        if(this.requestedSeats > 4) {
-            visible = false;
-        }
         if(visible) {
             ride.classList.remove('hidden');
         } else {
@@ -389,15 +386,13 @@ openCamera: function() {
     input.click();
 },
 clearAuthForms: function() {
-    document.getElementById('login-email').value = "";
-    document.getElementById('login-password').value = "";
-    document.getElementById('register-name').value = "";
-    document.getElementById('register-lastname').value = "";
-    document.getElementById('register-birthdate').value = "";
-    document.getElementById('register-phone').value = "";
-    document.getElementById('register-email').value = "";
-    document.getElementById('register-password').value = "";
-    document.getElementById('register-confirm-password').value = "";
+    if(document.getElementById('login-email')) document.getElementById('login-email').value = "";
+    if(document.getElementById('login-password')) document.getElementById('login-password').value = "";
+    if(document.getElementById('register-name')) document.getElementById('register-name').value = "";
+    if(document.getElementById('register-birthdate')) document.getElementById('register-birthdate').value = "";
+    if(document.getElementById('register-email')) document.getElementById('register-email').value = "";
+    if(document.getElementById('register-password')) document.getElementById('register-password').value = "";
+    if(document.getElementById('register-confirm-password')) document.getElementById('register-confirm-password').value = "";
 }
 };
 document.addEventListener('DOMContentLoaded', () => app.init());
